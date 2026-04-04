@@ -2,6 +2,12 @@ spring:
   application:
     name:comm-module
 
+  # Devtool Properties
+  devtools:
+    restart:
+      enabled: false
+
+  # Use Docker Postgre Database
   datasource:
     url: jdbc:postgresql://localhost:5432/postgre
     username: postgre
@@ -15,3 +21,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+# Keys Properties
+# Key Must exclude to Commit
+keys:
+  jjwt: jjwt-token-more-than-32-bit-!@#$%^&*()
+
+jwt:
+  expire:
+    access: 100000L
+    refresh: 100000000L
