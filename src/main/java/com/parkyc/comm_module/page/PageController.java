@@ -12,4 +12,9 @@ public class PageController {
     public String loginPage(){
         return "/login/login";
     }
+
+    @GetMapping("/sign-up")
+    public String signupPage(){
+        return "/login/signup";
+    }
 }

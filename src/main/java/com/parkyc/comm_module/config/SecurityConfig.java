@@ -1,12 +1,11 @@
 package com.parkyc.comm_module.config;
 
-import com.parkyc.comm_module.common.filter.JwtAuthFilter;
+import com.parkyc.comm_module.config.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +31,9 @@ public class SecurityConfig {
             .sessionManagement(session ->
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/v1/lgn/login", "/page/**", "/css/**").permitAll()
+                    .requestMatchers("/page/**", "/css/**").permitAll()
+                    .requestMatchers("/api/v1/lgn/login").permitAll()
+                    .requestMatchers("/api/v1/member/sign-up", "/api/v1/member/check-dup-id").permitAll()
                     .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

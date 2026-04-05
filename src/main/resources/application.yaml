@@ -29,5 +29,5 @@ keys:
 
 jwt:
   expire:
-    access: 100000L
-    refresh: 100000000L
+    access: 1800000
+    refresh: 2592000000

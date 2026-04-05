@@ -1,16 +1,16 @@
 package com.parkyc.comm_module.member.domain.entity;
 
+import com.parkyc.comm_module.common.code.MemberStatus;
+import com.parkyc.comm_module.member.domain.dto.MemberDTO;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+@Getter
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,9 +26,9 @@ import java.time.LocalDateTime;
 public class Member {
 
     @Id
-    @Column(name="member_seq")
+    @Column(name="member_id")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "MEMBER_SEQ_GENERATOR")
-    private Long memberSeq;
+    private Long memberId;
 
     @Column(name="login_id")
     private String loginId;
@@ -37,7 +37,8 @@ public class Member {
     private String password;
 
     @Column
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private MemberStatus status;
 
     @CreatedDate
     @Column(name="reg_dt", updatable = false)

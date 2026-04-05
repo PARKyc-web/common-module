@@ -1,5 +1,6 @@
 package com.parkyc.comm_module.common;
 
+import com.parkyc.comm_module.login.dto.LoginDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -21,6 +22,7 @@ public class JwtProvider {
     public static class Response{
         private boolean result;
         private String message;
+        private String loginId;
         private String accessToken;
         private String refreshToken;
     }
@@ -62,8 +64,35 @@ public class JwtProvider {
         return JwtProvider.Response.builder().build();
     }
 
-    public JwtProvider.Response renewLoginToken(String username){
-        return null;
+    public JwtProvider.Response renewLoginToken(LoginDTO.Member memberInfo){
+
+        Date now = new Date();
+        Claims claims = Jwts.claims()
+                .issuer("Common-Module")
+                .issuedAt(now)
+                .add("loginId", memberInfo.getLoginId())
+                .add("status", memberInfo.getStatus())
+                .build();
+
+        String accessToken = Jwts.builder()
+                .signWith(secretKey)
+                .claims(claims)
+                .expiration(new Date(now.getTime() + accessExpire))
+                .compact();
+
+        String refreshToken = Jwts.builder()
+                .signWith(secretKey)
+                .claims(claims)
+                .expiration(new Date(now.getTime() + refreshExpire))
+                .compact();
+
+        return Response.builder()
+                .result(true)
+                .message("Success Renew Login Token!!")
+                .loginId(memberInfo.getLoginId())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
 
