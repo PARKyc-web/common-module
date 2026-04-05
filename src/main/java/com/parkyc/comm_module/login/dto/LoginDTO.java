@@ -1,7 +1,9 @@
 package com.parkyc.comm_module.login.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 public class LoginDTO {
 
@@ -11,11 +13,11 @@ public class LoginDTO {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Request {
-
         private String loginId;
         private String password;
-
     }
 
     @Data
