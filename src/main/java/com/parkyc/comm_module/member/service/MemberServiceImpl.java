@@ -5,6 +5,7 @@ import com.parkyc.comm_module.member.domain.dto.MemberDTO;
 import com.parkyc.comm_module.member.domain.entity.Member;
 import com.parkyc.comm_module.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public boolean isDuplicateId(String loginId) {
@@ -30,7 +32,7 @@ public class MemberServiceImpl implements MemberService{
         }
         Member member = Member.builder()
                 .loginId(signUpInfo.getLoginId())
-                .password(signUpInfo.getPassword())
+                .password(passwordEncoder.encode(signUpInfo.getPassword()))
                 .status(MemberStatus.ACTIVE)
                 .build();
         memberRepository.saveAndFlush(member);

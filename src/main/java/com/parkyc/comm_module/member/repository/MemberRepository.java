@@ -8,4 +8,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Member findByLoginIdAndPassword(String loginId, String password);
 
     int countMemberByLoginId(String loginId);
+
+    Member findMemberByLoginId(String loginId);
 }

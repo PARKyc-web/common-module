@@ -43,6 +43,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer ")) {
+            // Error가 아니라 200 OK인데, 메세지 및 내용을 다르게해서 내려주는 것도 가능
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authorization header missing or invalid");
             return;
         }
