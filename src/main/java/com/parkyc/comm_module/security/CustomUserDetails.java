@@ -1,4 +1,4 @@
-package com.parkyc.comm_module.login.service;
+package com.parkyc.comm_module.security;
 
 import com.parkyc.comm_module.common.code.MemberStatus;
 import com.parkyc.comm_module.member.domain.entity.Member;

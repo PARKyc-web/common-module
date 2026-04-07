@@ -26,8 +26,15 @@ public class LoginDTO {
         private LoginDTO.Code result; /* 01: 로그인 실패, 02: 로그인 성공, 03: 만료계정, ... 기타 추가 가능 */
         private String loginId;
         private String accessToken;
-        private String refreshToken;
+    }
 
+    @Data
+    @Builder
+    public static class AppResponse {
+        private LoginDTO.Code result;
+        private String loginId;
+        private String accessToken;
+        private String refreshToken;
     }
 
     @Data

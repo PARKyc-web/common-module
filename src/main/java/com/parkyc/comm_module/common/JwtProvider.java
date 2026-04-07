@@ -2,6 +2,7 @@ package com.parkyc.comm_module.common;
 
 import com.parkyc.comm_module.login.dto.LoginDTO;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.Builder;
@@ -39,29 +40,54 @@ public class JwtProvider {
         this.refreshExpire = refreshExpire;
     }
 
-    public boolean isValidToken(String token){
-        Claims claims = verifyToken(token);
-
-        Date now = new Date();
-        Date expire = claims.getExpiration();
-
-        return now.before(expire);
-    }
-
     public Claims verifyToken(String token){
-        Claims claims = Jwts.parser()
+        return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-
-        return claims;
     }
 
     public JwtProvider.Response renewAccessToken(String refreshToken){
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return Response.builder()
+                    .result(false)
+                    .message("Fail to Renew Access Token : Refresh Token IS INVALID")
+                    .build();
+        }
 
+        try {
+            Claims claims = verifyToken(refreshToken);
+            String loginId = claims.get("loginId", String.class);
+            String status = claims.get("status", String.class);
+            Date now = new Date();
 
-        return JwtProvider.Response.builder().build();
+            Claims accessClaims = Jwts.claims()
+                    .issuer("Common-Module")
+                    .issuedAt(now)
+                    .add("loginId", loginId)
+                    .add("status", status)
+                    .build();
+
+            String accessToken = Jwts.builder()
+                    .signWith(secretKey)
+                    .claims(accessClaims)
+                    .expiration(new Date(now.getTime() + accessExpire))
+                    .compact();
+
+            return Response.builder()
+                    .result(true)
+                    .message("Success Renew Access Token!!")
+                    .loginId(loginId)
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken)
+                    .build();
+        } catch (JwtException | IllegalArgumentException exception) {
+            return Response.builder()
+                    .result(false)
+                    .message("Fail to Renew Access Token!!")
+                    .build();
+        }
     }
 
     public JwtProvider.Response renewLoginToken(LoginDTO.Member memberInfo){

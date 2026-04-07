@@ -1,6 +1,6 @@
 package com.parkyc.comm_module.config;
 
-import com.parkyc.comm_module.config.filter.JwtAuthFilter;
+import com.parkyc.comm_module.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +41,12 @@ public class SecurityConfig {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/page/**", "/css/**").permitAll()
-                    .requestMatchers("/api/v1/lgn/login").permitAll()
+                    .requestMatchers(
+                            "/api/v1/lgn/web/login",
+                            "/api/v1/lgn/web/refresh",
+                            "/api/v1/lgn/app/login",
+                            "/api/v1/lgn/app/refresh"
+                    ).permitAll()
                     .requestMatchers("/api/v1/member/sign-up", "/api/v1/member/check-dup-id").permitAll()
                     .anyRequest().authenticated()
             )

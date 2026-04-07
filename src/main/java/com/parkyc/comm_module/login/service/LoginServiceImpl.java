@@ -1,11 +1,13 @@
 package com.parkyc.comm_module.login.service;
 
+import com.parkyc.comm_module.common.JwtProvider;
+import com.parkyc.comm_module.login.dto.LoginDTO;
+import com.parkyc.comm_module.security.CustomUserDetails;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import com.parkyc.comm_module.common.JwtProvider;
-import com.parkyc.comm_module.login.dto.LoginDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +18,28 @@ public class LoginServiceImpl implements LoginService {
     private final JwtProvider jwtProvider;
     private final AuthenticationManager authenticationManager;
 
-    public LoginDTO.Response login(LoginDTO.Request loginInfo){
+    public JwtProvider.Response webLogin(LoginDTO.Request loginInfo){
+        return authenticateAndIssueToken(loginInfo);
+    }
+
+    @Override
+    public JwtProvider.Response appLogin(LoginDTO.Request loginInfo) {
+        return authenticateAndIssueToken(loginInfo);
+    }
+
+    @Override
+    public JwtProvider.Response webRefresh(HttpServletRequest request) {
+        String refreshToken = extractBearerToken(request.getHeader("Refresh-Token"));
+        return jwtProvider.renewAccessToken(refreshToken);
+    }
+
+    @Override
+    public JwtProvider.Response appRefresh(HttpServletRequest request) {
+        String refreshToken = extractBearerToken(request.getHeader("Refresh-Token"));
+        return jwtProvider.renewAccessToken(refreshToken);
+    }
+
+    private JwtProvider.Response authenticateAndIssueToken(LoginDTO.Request loginInfo) {
         Authentication authentication;
         try {
             authentication = authenticationManager.authenticate(
@@ -26,8 +49,9 @@ public class LoginServiceImpl implements LoginService {
                     )
             );
         } catch (BadCredentialsException exception) {
-            return LoginDTO.Response.builder()
-                    .result(LoginDTO.Code.FAIL)
+            return JwtProvider.Response.builder()
+                    .result(false)
+                    .message("Fail Login")
                     .loginId(loginInfo.getLoginId())
                     .build();
         }
@@ -40,11 +64,14 @@ public class LoginServiceImpl implements LoginService {
                 .build();
         JwtProvider.Response jwtResponse = jwtProvider.renewLoginToken(verifyMember);
 
-        return LoginDTO.Response.builder()
-                .result(LoginDTO.Code.SUCCESS)
-                .loginId(verifyMember.getLoginId())
-                .accessToken(jwtResponse.getAccessToken())
-                .refreshToken(jwtResponse.getRefreshToken())
-                .build();
+        return jwtResponse;
+    }
+
+    private String extractBearerToken(String header) {
+        if (header == null || !header.startsWith("Bearer ")) {
+            return null;
+        }
+
+        return header.substring(7);
     }
 }
